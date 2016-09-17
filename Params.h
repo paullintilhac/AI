@@ -8,14 +8,12 @@ class Params{
 public:
 	vector<float> lengths,speeds;
 	int deadline,targetVals,tCount,pCount;
-	bool visited[4][2];
+	//static bool visited[4][2];
+	static int active[3];
 
 	Params(char* fileName){
-	for (int i=0;i<2;++i){
-		for (int j=0;j<4;++j){
-			visited[j][i]=false;
-		}
-	}
+	
+	
 	ifstream infile (fileName	);
 	string str;
 	int id = 0;
@@ -46,5 +44,8 @@ public:
 
 	}
 };
+
+//bool Params::visited[4][2] = {{0,0},{0,0},{0,0},{0,0}};
+int Params::active[3] = {0,0,0};
 
 #endif

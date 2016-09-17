@@ -2,4 +2,4 @@
 
 g++ -o ID IterativeDeepening.cpp
 
-./ID.exe example
+./ID example
