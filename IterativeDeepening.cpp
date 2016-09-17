@@ -4,22 +4,21 @@
 #include <sstream>
 #include <fstream>
 #include <iostream>
-
+#include <stdlib.h>
+#include "Params.h"
 using namespace std;
 
 int main(int argc,char* argv[]){
-	string fileName  = string(argv[1]);
-	ifstream infile (fileName.c_str());
-	string str;
-	int id = 0;
-	while (getline(infile, str)) {
-    vector<string> result;
-    istringstream iss(str);
-        cout<<iss<<endl;
-
-    for(string s; iss >> s; )
-    result.push_back(s);
-	cout<<iss<<endl;
+	char* fileName  = argv[1];
+	
+	Params tree(fileName);
+	bool goal = false;
+	int depthLevel=1;
+	//cout<<"num processes: "<<tree.pCount<<", num tasks: "<<tree.tCount<<", deadline: "<<tree.deadline<<", value minimum: "<<tree.targetVals<<endl;
+    while(!goal){
+    
+    depthLevel++;
     }
+
     return(0);
 }
