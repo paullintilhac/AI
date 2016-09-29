@@ -27,9 +27,9 @@ public:
 	}
 	getline(infile, str);
     istringstream iss2(str);
-    cout<<"saving speeds"<<endl;
+    //cout<<"saving speeds"<<endl;
     while ( iss2 >> s){
-   	cout<<atof(s.c_str())<<endl;
+   	//cout<<atof(s.c_str())<<endl;
     pCount++;
     speeds.push_back(atof(s.c_str()));
 	}
