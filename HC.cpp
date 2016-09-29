@@ -102,7 +102,6 @@ string HC::HillClimber(int* stateVector){
 		for (int i=1;i<p->tCount;++i){
 			successString = successString+" " +to_string(result[i]);
 		}
-		cout<<"newCost: "<<newCost<<endl;
 		return(successString);
 	}
 	if (newCost==initCost || it>1000 ){
@@ -113,7 +112,6 @@ string HC::HillClimber(int* stateVector){
 	}
 	initCost = newCost;
 	}
-	cout<<"newCost: "<<newCost<<endl;
 	return(returnString);
 }
 
@@ -123,14 +121,14 @@ string HC::doSearch(){
 	srand(seed);
 	for (int i=0;i<rr;++i){
 		int* stateVector = new int[p->tCount];	
-	    cout<<"state vector: ";
+	    //cout<<"state vector: ";
 		for (int i=0;i<p->tCount;++i){
 			stateVector[i]=rand() % (p->pCount+1);
-			cout<<to_string(stateVector[i])+" ";
+			//cout<<to_string(stateVector[i])+" ";
 		}
-		cout<<endl;
+		//cout<<endl;
 		finalString = HillClimber( stateVector);
-		cout<<finalString<<endl;
+		//cout<<finalString<<endl;
 		if (finalString!="No solution"){
 			break;
 		}
