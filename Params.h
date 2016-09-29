@@ -8,14 +8,10 @@ class Params{
 public:
 	vector<float> lengths,speeds;
 	int deadline,targetVals,tCount,pCount;
-	bool visited[4][2];
 
 	Params(char* fileName){
-	for (int i=0;i<2;++i){
-		for (int j=0;j<4;++j){
-			visited[j][i]=false;
-		}
-	}
+	
+
 	ifstream infile (fileName	);
 	string str;
 	int id = 0;
@@ -31,7 +27,9 @@ public:
 	}
 	getline(infile, str);
     istringstream iss2(str);
+    cout<<"saving speeds"<<endl;
     while ( iss2 >> s){
+   	cout<<atof(s.c_str())<<endl;
     pCount++;
     speeds.push_back(atof(s.c_str()));
 	}

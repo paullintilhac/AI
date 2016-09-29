@@ -1,5 +1,5 @@
 #!/bin/bash
 
-g++ -o ID IterativeDeepening.cpp
+g++ -std=c++11 -o ID IterativeDeepening.cpp
 
 ./ID.exe example
