@@ -8,9 +8,7 @@ class Params{
 public:
 	vector<float> lengths,speeds;
 	int deadline,targetVals,tCount,pCount;
-
 	Params(char* fileName){
-	
 
 	ifstream infile (fileName	);
 	string str;
@@ -44,5 +42,6 @@ public:
 
 	}
 };
+
 
 #endif

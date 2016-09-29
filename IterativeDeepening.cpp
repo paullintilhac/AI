@@ -49,12 +49,13 @@ string DFS(Params p,int level, int branch,int maxLevel, int* stateVector){
 	}
 	
 	return("no solution");
+
 }
 
 int main(int argc,char* argv[]){
 	char* fileName  = argv[1];
 	//bool visited[4][2];
-
+    static int totalTime, targetVals;
 	Params tree(fileName);
 	bool goal = false;
 	int depthLevel=1;
@@ -72,7 +73,6 @@ int main(int argc,char* argv[]){
 		//cout<<"---------------"<<endl;
 	}
 	cout<<returnString<<endl;
-	//cout<<"num processes: "<<tree.pCount<<", num tasks: "<<tree.tCount<<", deadline: "<<tree.deadline<<", value minimum: "<<tree.targetVals<<endl;
 
 
     return(0);
