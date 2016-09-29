@@ -10,14 +10,14 @@
 using namespace std;
 
 string DFS(Params p,int level, int branch,int maxLevel, int* stateVector){
-	(stateVector)[level-1] = branch;
-	//	cout<<"state vector: "<<(stateVector)[0]<<" "<<(stateVector)[1]<<" "<<(stateVector)[2]<<" "<<(stateVector)[3]<<endl;
-	//cout<<"level: "<<level<<endl;
+	// note the level is 1-indexed
+	stateVector[level-1] = branch; //update state vector
+
+	//calculate value and time of current state vector
 	float valSum = 0;
 	float* totalTimes = new float[p.pCount];
 		for (int j=0;j<p.tCount;++j){
 			if (stateVector[j]>0){
-				//cout<<"length: "<<p.lengths[j]<<", speed: "<<p.speeds[stateVector[j]-1]<<endl;
 				totalTimes[stateVector[j]-1] += (float)p.lengths[j]/(float)p.speeds[stateVector[j]-1];
 				valSum+=p.lengths[j];	
 			}
@@ -29,9 +29,8 @@ string DFS(Params p,int level, int branch,int maxLevel, int* stateVector){
 		}
 	}
 	
-	//cout<<"totalTime: "<<totalTime<<", valSum: "<<valSum<<endl;
+	//check if goal state has been reached
 	if (totalTime<p.deadline && valSum >= p.targetVals){
-		//cout<<"found goal state"<<endl;
 		string returnString="";
 		for (int i=0;i<p.tCount;++i){
 			returnString =returnString+ to_string(stateVector[i]);
@@ -39,38 +38,41 @@ string DFS(Params p,int level, int branch,int maxLevel, int* stateVector){
 		return(returnString);
 	}
 
+	//now iterate through children recursively
 	for (int i=0;i<p.pCount+1;++i){
 		if (level <maxLevel){
 			string childReturnString = DFS(p,level+1,i,maxLevel,stateVector);
+			//if the result was success, we need to exit inside loop
 			if (childReturnString !="no solution"){
 				return(childReturnString);
 			}
 		}
 	}
-	
+	//entire tree has been searched without goal state, meaning no solution
 	return("no solution");
 
 }
 
 int main(int argc,char* argv[]){
 	char* fileName  = argv[1];
-	//bool visited[4][2];
     static int totalTime, targetVals;
 	Params tree(fileName);
 	bool goal = false;
 	int depthLevel=1;
 	int* stateVector = new int[tree.tCount];
-	//cout<<"tCount: "<<tree.tCount<<endl;
 	string returnString = "";
+
+	//iterate over different maximum depths
 	for (int j = 1;j<=tree.tCount;++j){
-		//cout<<"stateVector: ";
+		//reset state vector at the start of each DFS
 		for (int i=0;i<tree.tCount;++i){
 			stateVector[i]=0;
-			//cout<<" "<<stateVector[i];
 		}
-		//cout<<endl;
 		returnString = DFS(tree,0,0,j,stateVector);
-		//cout<<"---------------"<<endl;
+		//if goal is reached, exit before full depth
+		if (returnString!="no solution"){
+			break;
+		}
 	}
 	cout<<returnString<<endl;
 
