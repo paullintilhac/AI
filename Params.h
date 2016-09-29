@@ -1,7 +1,19 @@
 #ifndef PARAMS_H
 #define PARAMS_H
 
-
+#include <stdio.h>
+#include <string>
+#include <vector>
+#include <sstream>
+#include <fstream>
+#include <iostream>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string>
+#include <vector>
+#include <sstream>
+#include <fstream>
+#include <iostream>
 using namespace std;
 
 class Params{

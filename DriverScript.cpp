@@ -11,8 +11,9 @@
 #include <sstream>
 #include <fstream>
 #include <iostream>
-#include "Params.h"
+#include <unistd.h>
 #include "SearchAlgorithm.h"
+#include "Params.h"
 
 using namespace std;
 
@@ -20,12 +21,15 @@ using namespace std;
 int main(int argc,char* argv[]){
 
 	char* fileName  = argv[2];
-	string algo = string(argv[1]);
+	string algoString = string(argv[1]);
 
+	string algo = algoString.substr(0,2);
+	string rr = algoString.substr(2,algoString.length()-2);
+	int r = atof(rr.c_str());
 	Params* p= new Params(fileName);
 	SearchAlgorithm* al;
 	if (algo =="-h"){
-		al = new HC(p);
+		al = new HC(p,r);
 	} else if(algo == "-i"){
 		al = new ID(p);
 	} else{
