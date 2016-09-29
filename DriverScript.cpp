@@ -25,6 +25,10 @@ int main(int argc,char* argv[]){
 
 	string algo = algoString.substr(0,2);
 	string rr = algoString.substr(2,algoString.length()-2);
+	if (rr.length()<1){
+		cout<<"need to specify # of restarts for hill-climbing, e.g. -h10"<<endl;
+		exit(1);
+	}
 	int r = atof(rr.c_str());
 	Params* p= new Params(fileName);
 	SearchAlgorithm* al;
