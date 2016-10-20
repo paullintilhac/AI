@@ -37,11 +37,22 @@ public:
 	};
 
 	//bool run_dp(int depth, int branch, vector<int> values){
-	vector<int> run_dp(int depth,vector<vector<int>> sentences,vector<int> states){
+	string run_dp(int depth,vector<vector<int>> sentences,vector<int> states){
 
-		for (int i=0;i<2;++i){
+			for (int i=0;i<2;++i){
 			if (success){
-			return(states);
+			string returnString="";
+			for (int i=0;i<states.size();++i){
+				string TF = "";
+				if (states[i]>0){
+					TF = "T";
+				} else{
+					TF = "F";
+				}
+				returnString +=to_string(i+1)+" "+TF+"\n";
+			}
+			returnString +="0\n";
+			return(returnString);
 			}
 			cout<<"depth: "<<depth<<", i: "<<i<<endl;
 			while(true){
@@ -72,7 +83,18 @@ public:
 				if (sentences.size()==0){
 				success = true;
 				cout<<"success, returning reslt"<<endl;
-				return(states);
+				string returnString="";
+				for (int i=0;i<states.size();++i){
+					string TF = "";
+					if (states[i]>0){
+						TF = "T";
+					} else{
+						TF = "F";
+					}
+					returnString +=to_string(i+1)+" "+TF+"\n";
+				}
+				returnString +="0\n";
+				return(returnString);
 				}
 			}
 			
@@ -104,14 +126,25 @@ public:
 			if (sentences.size()==0){
 				success = true;
 				cout<<"success, returning reslt"<<endl;
-				return(states);
+				string returnString="";
+				for (int i=0;i<states.size();++i){
+					string TF = "";
+					if (states[i]>0){
+						TF = "T";
+					} else{
+						TF = "F";
+					}
+					returnString +=to_string(i+1)+" "+TF+"\n";
+				}
+				returnString +="0\n";
+				return(returnString);
 			}
 			if (nextOpenDepth<literalSet.size()&&success==false)
 			run_dp(nextOpenDepth, sentences,states);
 			
 		}
-		vector<int> fail = {-1};
-		return(fail);
+		
+		return("0\n");
 	};
 
 	vector<int> checkForUnits(vector<vector<int>> c){
