@@ -45,4 +45,26 @@ int main(int argc, char* argv[]){
 	DP dp(clauseSet);
 	string result = dp.run_dp(0,dp.simpClauses,dp.literalValues);	
 	cout<<result;
+	ofstream resultOut("results");
+	if (! resultOut) { std::cerr<<"Error writing to ..."<< endl; } else {
+	resultOut << result;
+	}
+	resultOut.close();
+	ifstream infile3("results");
+	
+	string str3;
+
+	while (getline(infile3, str3)) {
+	stringstream resultStream(str3);
+	vector<Atom> results;
+	int atomInd;
+	string TF;
+	resultStream>>atomInd;
+	resultStream>>TF;
+	if (TF=="T"){
+		results.push_back(fe.atoms[atomInd-1]);
+		cout<<"TRUE atom: "<<fe.atoms[atomInd-1].name<<endl;
+	}
+
+	}
 }

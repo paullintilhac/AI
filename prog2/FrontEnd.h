@@ -1,6 +1,7 @@
 
 class FrontEnd{
 public:
+	vector<Atom> atoms;
 	FrontEnd(char* fileName){
 	ifstream infile2(fileName);
 	string str2;
@@ -30,7 +31,6 @@ public:
 	vector<vector<int>> edges; //[currentNode][adjacentNode]
 	vector<vector<int>> treasures;
 	vector<vector<int>> tolls;
-	vector<Atom> atoms;
 	vector<vector<Atom>> atAtoms; //[time][node]
 	vector<vector<Atom>> hasAtoms; //[time][treasure]
 	vector<vector<Atom>> availAtoms; //[time][treasure]
@@ -92,8 +92,13 @@ public:
 		}
 		edges.push_back(adjacentNodes);
 	}
-
-
+	cout<<"TOLLS"<<endl;
+	for (int i=0;i<tolls.size();++i){
+		for (int j=0;j<tolls[i].size();++j){
+			cout<<tolls[i][j]<<" ";
+		}
+		cout<<endl;
+	}
 	for (int i=0;i<=maxSteps;++i){
 		vector<Atom> nodes;
 		for (int j=0;j<nodeList.size();++j){
@@ -127,27 +132,35 @@ public:
 	string clauses;
 	for (int i=0;i<=maxSteps;++i){
 		for (int j=0;j<atAtoms[i].size()-1;++j){
+
 			for (int k=j+1;k<atAtoms[i].size();++k){
 				//category 1
 				clauses+="-"+to_string(atAtoms[i][j].index)+" -"+to_string(atAtoms[i][k].index)+"\n";
 			}
+
 			if (i<maxSteps){
+
 				//category 3
+				if (edges[j].size()>0){
 				clauses+="-"+to_string(atAtoms[i][j].index);
 				for (int k=0;k<edges[j].size();++k){
 					clauses+=" "+to_string(atAtoms[i+1][edges[j][k]].index);
 				}
 				clauses+="\n";
+				}
 				//category 4
+				if (tolls[j].size()>0){
 				clauses+="-"+to_string(atAtoms[i+1][j].index);
 				for (int k=0;k<tolls[j].size();++k){
 					clauses+=" "+to_string(hasAtoms[i][tolls[j][k]].index);
 				}
 				clauses+="\n";
+				}
 				//category 5
 				for (int k=0;k<treasures[j].size();++k){
 				clauses+="-"+to_string(availAtoms[i][treasures[j][k]].index)+" -"+to_string(atAtoms[i+1][j].index)+" "+to_string(hasAtoms[i+1][treasures[j][k]].index)+"\n";
 				}
+
 				//category 7
 				for (int k=0;k<treasures[j].size();++k){
 					for (int l=0;l<atAtoms[i].size();++l){
@@ -156,6 +169,7 @@ public:
 					}
 				}
 				}
+
 				//category 10
 				for (int k=0;k<tolls[j].size();++k){
 					for (int l=0;l<atAtoms[i].size();++l){
@@ -164,17 +178,25 @@ public:
 					}
 				}
 				}
+
 			}
+
 			//category 6
+			if (tolls[j].size()>0){
 			clauses+="-"+to_string(atAtoms[i][j].index);
+			//cout<<"spec clause: "<<to_string(atAtoms[i][j].index)<<endl;
 			for (int k=0;k<tolls[j].size();++k){
 				clauses+=" -"+to_string(hasAtoms[i][tolls[j][k]].index);
+				//cout<<"spec clause2: "<<to_string(hasAtoms[i][tolls[j][k]].index)<<endl;
+
 			}
 			clauses+="\n";
+			}
+
 
 
 		}
-		
+
 		//category 2
 		for (int j=0;j<hasAtoms[i].size();++j){
 			clauses+="-"+to_string(hasAtoms[i][j].index)+" -"+to_string(availAtoms[i][j].index)+"\n";
@@ -191,6 +213,7 @@ public:
 		}
 
 	}
+
 	clauses+=to_string(atAtoms[0][0].index)+"\n";
 	for (int i=0;i<availAtoms[0].size();++i){
 		clauses+=to_string(availAtoms[0][i].index)+"\n";
@@ -198,10 +221,11 @@ public:
 	clauses+=to_string(atAtoms[maxSteps][atAtoms[0].size()-1].index)+"\n";
 
 	clauses+="0\n";
+	cout<<"clauses: "<<clauses<<endl;
+
 	ofstream os("clauses");
 	if (! os) { std::cerr<<"Error writing to ..."<< endl; } else {
 	os << clauses;
 	}
-	cout<<"clauses: "<<clauses<<endl;
 }
 };

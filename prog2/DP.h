@@ -48,7 +48,7 @@ public:
 				}
 				returnString +=to_string(i+1)+" "+TF+"\n";
 			}
-			returnString +="0\n";
+			returnString +="0";
 			return(returnString);
 			}
 			cout<<"depth: "<<depth<<", i: "<<i<<endl;
@@ -61,18 +61,35 @@ public:
 				for (int i=0;i<literalUpdates.size();++i){
 					states[abs(literalUpdates[i])-1] = literalUpdates[i];
 					sentences = reduce(literalUpdates[i],sentences,abs(literalUpdates[i])-1);
-					cout<<"hello3"<<endl;
 
-					cout<<"sentences[0][0]: "<<sentences[0][0]<<endl;
+					//cout<<"sentences[0][0]: "<<sentences[0][0]<<endl;
 					if (sentences[0][0]==0){
-						return("0\n");
+						return("0");
 					}
-
-					//cout<<"updated literals after eliminating singletons: "<<endl;
-					//for (int i=0;i<literalSet.size();++i){
-					//	cout<<states[i]<<" ";
-					//}
-					//cout<<endl;
+					if (sentences.size()==0){
+						cout<<"sentence[0] size: "<<sentences[0].size()<<endl;
+						success = true;
+						cout<<"success, returning reslt"<<endl;
+						string returnString="";
+						for (int i=0;i<states.size();++i){
+						string TF = "";
+						if (states[i]>0){
+							TF = "T";
+						} else{
+							TF = "F";
+						}
+						returnString +=to_string(i+1)+" "+TF+"\n";
+						}
+						returnString +="0";
+						return(returnString);
+					}
+					if (true){
+					cout<<"updated literals after eliminating singletons: "<<endl;
+					for (int i=0;i<literalSet.size();++i){
+						cout<<states[i]<<" ";
+					}
+					cout<<endl;
+					}
 				}
 				for (int i=0;i<pureUpdates.size();++i){
 					states[abs(pureUpdates[i])-1] = pureUpdates[i];
@@ -80,58 +97,56 @@ public:
 					if (sentences[0][0]==0){
 						return("0\n");
 					}
-					cout<<"hello4"<<endl;
-
-					//cout<<"updated literals after eliminating pure literals: "<<endl;
-					//for (int i=0;i<literalSet.size();++i){
-					//	cout<<states[i]<<" ";
-					//}
-					//cout<<endl;
-				}
-				if (sentences.size()==0){
-				cout<<"sentence[0] size: "<<sentences[0].size()<<endl;
-				success = true;
-				cout<<"success, returning reslt"<<endl;
-				string returnString="";
-				for (int i=0;i<states.size();++i){
-					string TF = "";
-					if (states[i]>0){
-						TF = "T";
-					} else{
-						TF = "F";
+					if (sentences.size()==0){
+						cout<<"sentence[0] size: "<<sentences[0].size()<<endl;
+						success = true;
+						cout<<"success, returning reslt"<<endl;
+						string returnString="";
+						for (int i=0;i<states.size();++i){
+						string TF = "";
+						if (states[i]>0){
+							TF = "T";
+						} else{
+							TF = "F";
+						}
+						returnString +=to_string(i+1)+" "+TF+"\n";
+						}
+						returnString +="0";
+						return(returnString);
 					}
-					returnString +=to_string(i+1)+" "+TF+"\n";
+					if (true){
+					cout<<"updated literals after eliminating pure literals: "<<endl;
+					for (int i=0;i<literalSet.size();++i){
+						cout<<states[i]<<" ";
+					}
+					cout<<endl;
+					}
 				}
-				returnString +="0\n";
-				return(returnString);
 				
-
-			}
 			}
 			
 			
-
+			cout<<"litralSet[depth]: "<<literalSet[depth]<<endl;
 			if (i==0){
 			states[depth] =literalSet[depth];
 			sentences = reduce(literalSet[depth],sentences,depth);
 			if (sentences[0][0]==0){
 						return("0\n");
 			}
-			cout<<"hello1"<<endl;
 			} else{
 			states[depth] =-literalSet[depth];
 			sentences = reduce(-literalSet[depth],sentences,depth);
 			if (sentences[0][0]==0){
-						return("0\n");
+					return("0\n");
 			}
-			cout<<"hello2"<<endl;
 
 			}
-			
-			//cout<<"updated literals: "<<endl;
-			//for (int i=0;i<literalSet.size();++i){
-			//	cout<<states[i]<<" ";
-			//}
+			if (true){
+			cout<<"updated literals: "<<endl;
+			for (int i=0;i<literalSet.size();++i){
+				cout<<states[i]<<" ";
+			}
+			}
 			cout<<endl;
 			int nextOpenDepth = -1;
 			for (int i=depth+1;i<literalSet.size();++i){
@@ -142,7 +157,7 @@ public:
 				
 			}
 			if (sentences.size()==0){
-				cout<<"sentence[0] size: "<<sentences[0].size()<<endl;
+				//cout<<"sentence[0] size: "<<sentences[0].size()<<endl;
 				if ((sentences[0].size())>0){
 				success = true;
 				cout<<"success, returning reslt"<<endl;
@@ -172,11 +187,11 @@ public:
 	};
 
 	vector<int> checkForUnits(vector<vector<int>> c){
-		cout<<"checking for units "<<endl;
+		//cout<<"checking for units "<<endl;
 		vector<int> literalUpdates;
 		for (int i=0;i<c.size();++i){
 			if (c[i].size()==1 && c[i][0]!=0){
-				//cout<<"found pure literal: "<<c[i][0]<<endl;
+				cout<<"found unit "<<c[i][0]<<endl;
 				literalUpdates.push_back(c[i][0]);
 			}
 		}
@@ -185,7 +200,7 @@ public:
 	};
 
 	vector<int> checkForPureLiterals(vector<vector<int>> c){
-				cout<<"checking for pure literals "<<endl;
+		//cout<<"checking for pure literals "<<endl;
 
 		vector<int> polarity;
 		vector<bool> pure;
@@ -234,16 +249,16 @@ public:
 
 				if (c[j][k]==lit){ //if literal apears in clause, clause is true, set to 0
 					cout<<"eliminating clause in success..."<<endl;
-					c.erase(c.begin()+j);
+					c[j] = {0};
 					break;
 				}
 				if (c[j][k]==-lit){
 					if (c[j].size()>1){
-					cout<<"eliminating literal: "<<c[j][k]<<endl;
-					c[j].erase(c[j].begin()+k); //0 element means true
+					//cout<<"eliminating literal: "<<c[j][k]<<endl;
+					c[j][k]=0; //0 element means true
 					} else{
 
-					cout<<"eliminating clause in failure: "<<j<<endl;
+					//cout<<"eliminating clause in failure: "<<j<<endl;
 
 					return{{0}};
 					}
@@ -254,26 +269,31 @@ public:
 		while (i!=c.end()){
 			if (i->size()==1 && (*i)[0]==0){
 				i = c.erase(i);
+			} else{
+			vector<int>::iterator j = (*i).begin();
+			while(j!=(*i).end()){
+				if ((*j)==0){
+					j=(*i).erase(j);
+				} else{
+					j++;
+				}
 			}
-			else ++i;
+			i++;
+			}
+			
 		}
-		//int erasureCount=0;
-		//for (int i=0;i<c.size();++i){
-		//	if (c[i].size() ==1 && c[i][0]==0){
-		//		c.erase(c.begin()+i-++erasureCount);
-		//	}
-		//	
-		//}
 		
-		//if (depth>){
+		
+		if (false){
 		cout<<"updated clause set: "<<endl;
 		for (int i=0; i<c.size();++i){
+			cout<<"clause # "<<i<<": ";
 			for (int j=0;j<c[i].size();++j){
-			cout<<"clause #: "<<i<<", "<<c[i][j]<<" ";
+			cout<<c[i][j]<<" ";
 			}
-						cout<<endl;
+			cout<<endl;
 		}
-		//	}
+		}
 		return(c);
 	}
 };
