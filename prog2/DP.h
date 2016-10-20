@@ -13,16 +13,13 @@ public:
 	vector<int> literalValues;
 	bool success = false;
 	DP(vector<vector<int> > c){
-		cout<<"size of clause set in constructor: "<<c.size()<<endl;
 
 		clauses = c;
 		simpClauses = c;
 		for (int i=0;i<clauses.size();++i){
-			cout<<"clauses[i][]: "<<endl;
 
 			for (int j=0;j<clauses[i].size();++j){
 				bool newLiteral = true;
-				cout<<clauses[i][j]<<" ";
 				for (int k=0;k<literalSet.size();++k){
 					if (abs(clauses[i][j])==abs(literalSet[k]))
 						newLiteral=false;
@@ -58,29 +55,41 @@ public:
 			while(true){
 				vector<int> literalUpdates = checkForUnits(sentences);
 				vector<int> pureUpdates = checkForPureLiterals(sentences);
-				cout<<"pureUpdates.size(): "<<pureUpdates.size()<<endl;
 				if (literalUpdates.size()==0 && pureUpdates.size()==0){
 					break;
 				}
 				for (int i=0;i<literalUpdates.size();++i){
 					states[abs(literalUpdates[i])-1] = literalUpdates[i];
 					sentences = reduce(literalUpdates[i],sentences,abs(literalUpdates[i])-1);
-					cout<<"updated literals after eliminating singletons: "<<endl;
-					for (int i=0;i<literalSet.size();++i){
-						cout<<states[i]<<" ";
+					cout<<"hello3"<<endl;
+
+					cout<<"sentences[0][0]: "<<sentences[0][0]<<endl;
+					if (sentences[0][0]==0){
+						return("0\n");
 					}
-					cout<<endl;
+
+					//cout<<"updated literals after eliminating singletons: "<<endl;
+					//for (int i=0;i<literalSet.size();++i){
+					//	cout<<states[i]<<" ";
+					//}
+					//cout<<endl;
 				}
 				for (int i=0;i<pureUpdates.size();++i){
 					states[abs(pureUpdates[i])-1] = pureUpdates[i];
 					sentences = reduce(pureUpdates[i],sentences,abs(pureUpdates[i])-1);
-					cout<<"updated literals after eliminating pure literals: "<<endl;
-					for (int i=0;i<literalSet.size();++i){
-						cout<<states[i]<<" ";
+					if (sentences[0][0]==0){
+						return("0\n");
 					}
-					cout<<endl;
+					cout<<"hello4"<<endl;
+
+					//cout<<"updated literals after eliminating pure literals: "<<endl;
+					//for (int i=0;i<literalSet.size();++i){
+					//	cout<<states[i]<<" ";
+					//}
+					//cout<<endl;
 				}
 				if (sentences.size()==0){
+				cout<<"sentence[0] size: "<<sentences[0].size()<<endl;
 				success = true;
 				cout<<"success, returning reslt"<<endl;
 				string returnString="";
@@ -95,7 +104,9 @@ public:
 				}
 				returnString +="0\n";
 				return(returnString);
-				}
+				
+
+			}
 			}
 			
 			
@@ -103,16 +114,24 @@ public:
 			if (i==0){
 			states[depth] =literalSet[depth];
 			sentences = reduce(literalSet[depth],sentences,depth);
-			
+			if (sentences[0][0]==0){
+						return("0\n");
+			}
+			cout<<"hello1"<<endl;
 			} else{
 			states[depth] =-literalSet[depth];
 			sentences = reduce(-literalSet[depth],sentences,depth);
+			if (sentences[0][0]==0){
+						return("0\n");
+			}
+			cout<<"hello2"<<endl;
+
 			}
 			
-			cout<<"updated literals: "<<endl;
-			for (int i=0;i<literalSet.size();++i){
-				cout<<states[i]<<" ";
-			}
+			//cout<<"updated literals: "<<endl;
+			//for (int i=0;i<literalSet.size();++i){
+			//	cout<<states[i]<<" ";
+			//}
 			cout<<endl;
 			int nextOpenDepth = -1;
 			for (int i=depth+1;i<literalSet.size();++i){
@@ -122,8 +141,9 @@ public:
 				}
 				
 			}
-			cout<<"simplClauses.size(): "<<sentences.size()<<endl;
 			if (sentences.size()==0){
+				cout<<"sentence[0] size: "<<sentences[0].size()<<endl;
+				if ((sentences[0].size())>0){
 				success = true;
 				cout<<"success, returning reslt"<<endl;
 				string returnString="";
@@ -138,6 +158,10 @@ public:
 				}
 				returnString +="0\n";
 				return(returnString);
+			}else{
+				cout<<"FAILED"<<endl;
+				return("");
+			}
 			}
 			if (nextOpenDepth<literalSet.size()&&success==false)
 			run_dp(nextOpenDepth, sentences,states);
@@ -148,7 +172,7 @@ public:
 	};
 
 	vector<int> checkForUnits(vector<vector<int>> c){
-		//cout<<"checking for literals "<<endl;
+		cout<<"checking for units "<<endl;
 		vector<int> literalUpdates;
 		for (int i=0;i<c.size();++i){
 			if (c[i].size()==1 && c[i][0]!=0){
@@ -161,6 +185,8 @@ public:
 	};
 
 	vector<int> checkForPureLiterals(vector<vector<int>> c){
+				cout<<"checking for pure literals "<<endl;
+
 		vector<int> polarity;
 		vector<bool> pure;
 		vector<int> pureUpdates;
@@ -200,43 +226,54 @@ public:
 	};
 
 	vector<vector<int>> reduce(int lit,vector<vector<int>> c,int depth){
-		//cout<<"lit: "<<lit<<endl;
+		cout<<"lit: "<<lit<<endl;
 		for (int j=0;j<c.size();++j){
 			//cout<<"c[j].size(): "<<c[j].size()<<endl;
 			for (int k=0;k<c[j].size();++k){
 				//cout<<"j: "<<j<<", k: "<<k<<", c[j][k]: "<<c[j][k]<<", lit: "<<lit<<endl;
 
 				if (c[j][k]==lit){ //if literal apears in clause, clause is true, set to 0
-					//cout<<"eliminating clause..."<<endl;
-					c[j] = {0};
+					cout<<"eliminating clause in success..."<<endl;
+					c.erase(c.begin()+j);
+					break;
 				}
 				if (c[j][k]==-lit){
 					if (c[j].size()>1){
-					//cout<<"eliminating literal: "<<c[j][k]<<endl;
+					cout<<"eliminating literal: "<<c[j][k]<<endl;
 					c[j].erase(c[j].begin()+k); //0 element means true
 					} else{
-					//cout<<"eliminating clause: "<<j<<endl;
-					c[j] = {0};
+
+					cout<<"eliminating clause in failure: "<<j<<endl;
+
+					return{{0}};
 					}
 				}
 			}
 		}
-		for (int i=0;i<c.size();++i){
-			if (c[i].size() ==1 && c[i][0]==0){
-				c.erase(c.begin()+i);
+		vector<vector<int>>::iterator i = c.begin();
+		while (i!=c.end()){
+			if (i->size()==1 && (*i)[0]==0){
+				i = c.erase(i);
 			}
-			
+			else ++i;
 		}
-		
-
-		//cout<<"updated clause set: "<<endl;
-		//for (int i=0; i<c.size();++i){
-		//	for (int j=0;j<c[i].size();++j){
-		//		cout<<c[i][j]<<" ";
+		//int erasureCount=0;
+		//for (int i=0;i<c.size();++i){
+		//	if (c[i].size() ==1 && c[i][0]==0){
+		//		c.erase(c.begin()+i-++erasureCount);
 		//	}
-		//				cout<<endl;
+		//	
 		//}
-
+		
+		//if (depth>){
+		cout<<"updated clause set: "<<endl;
+		for (int i=0; i<c.size();++i){
+			for (int j=0;j<c[i].size();++j){
+			cout<<"clause #: "<<i<<", "<<c[i][j]<<" ";
+			}
+						cout<<endl;
+		}
+		//	}
 		return(c);
 	}
 };
