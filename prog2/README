@@ -1,0 +1,8 @@
+running ./make.sh [mazefile] will comile and run the program. To compile without running, simply run
+
+g++ -std=gnu++11 -o driver driver.cpp
+
+to run without compiling, simply run
+
+./driver [mazefile]
+
