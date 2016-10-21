@@ -15,7 +15,6 @@ public:
 	        if (ss1.peek() == ',')
 	            ss1.ignore();
 	}
-	cout<<"node list size: "<<nodeList.size()<<endl;
 	getline(infile2, str2);
 	stringstream ss2(str2);
 	
@@ -23,8 +22,6 @@ public:
 	while (ss2 >> s)
 	    {
 	    treasureList.push_back(s);
-	        if (ss1.peek() == ',')
-	            ss1.ignore();
 	}
 	getline(infile2, str2);
 	int maxSteps = atoi(str2.c_str());
@@ -43,7 +40,6 @@ public:
 		string node;
 		ss3>>node;
 		string i;
-		cout<<"node: "<<node<<endl;
 		vector<int> adjacentNodes;
 		vector<int> nodeTreasures;
 		vector<int> nodeTolls;
@@ -92,13 +88,14 @@ public:
 		}
 		edges.push_back(adjacentNodes);
 	}
-	cout<<"TOLLS"<<endl;
-	for (int i=0;i<tolls.size();++i){
-		for (int j=0;j<tolls[i].size();++j){
-			cout<<tolls[i][j]<<" ";
+	for (int i=0;i<edges.size();++i){
+		for (int j=0;j<edges[i].size();++j){
+			cout<<nodeList[edges[i][j]]<<" ";
 		}
 		cout<<endl;
 	}
+	
+	//cout<<"at atoms: "<<endl;
 	for (int i=0;i<=maxSteps;++i){
 		vector<Atom> nodes;
 		for (int j=0;j<nodeList.size();++j){
@@ -106,9 +103,11 @@ public:
 			Atom thisAtom(i,"",nodeList[j],"At",atomString,++count);
 			nodes.push_back(thisAtom);
 			atoms.push_back(thisAtom);
+			//cout<<thisAtom.name<<endl;
 		}
 		atAtoms.push_back(nodes);
 	}
+	//cout<<"has atoms: "<<endl;
 	for (int i=0;i<=maxSteps;++i){
 		vector<Atom> hasTreasures;
 		vector<Atom> availTreasures;
@@ -121,44 +120,55 @@ public:
 			Atom thisAtom2(i,treasureList[j],"","Available",atomString,++count);
 			availTreasures.push_back(thisAtom2);
 			atoms.push_back(thisAtom2);
+			//cout<<thisAtom.name<<endl;
 		}
 		hasAtoms.push_back(hasTreasures);
 		availAtoms.push_back(availTreasures);
 	}
 
-	for (int i=0;i<atoms.size();++i){
-		cout<<atoms[i].index<<" "<<atoms[i].name<<endl;
-	}
+	
 	string clauses;
+	string clauses2;
 	for (int i=0;i<=maxSteps;++i){
-		for (int j=0;j<atAtoms[i].size()-1;++j){
+		for (int j=0;j<atAtoms[i].size();++j){
 
 			for (int k=j+1;k<atAtoms[i].size();++k){
 				//category 1
 				clauses+="-"+to_string(atAtoms[i][j].index)+" -"+to_string(atAtoms[i][k].index)+"\n";
+				clauses2+="-"+atAtoms[i][j].name+" -"+atAtoms[i][k].name+"\n";
 			}
 
 			if (i<maxSteps){
-
 				//category 3
 				if (edges[j].size()>0){
 				clauses+="-"+to_string(atAtoms[i][j].index);
+				clauses2+="-"+atAtoms[i][j].name;
+
 				for (int k=0;k<edges[j].size();++k){
 					clauses+=" "+to_string(atAtoms[i+1][edges[j][k]].index);
+					clauses2+=" "+atAtoms[i+1][edges[j][k]].name;
 				}
+
 				clauses+="\n";
+				clauses2+="\n";
+
 				}
 				//category 4
 				if (tolls[j].size()>0){
 				clauses+="-"+to_string(atAtoms[i+1][j].index);
+				clauses2+="-"+atAtoms[i+1][j].name;
 				for (int k=0;k<tolls[j].size();++k){
 					clauses+=" "+to_string(hasAtoms[i][tolls[j][k]].index);
+					clauses2+=" "+hasAtoms[i][tolls[j][k]].name;
 				}
 				clauses+="\n";
+				clauses2+="\n";
+
 				}
 				//category 5
 				for (int k=0;k<treasures[j].size();++k){
 				clauses+="-"+to_string(availAtoms[i][treasures[j][k]].index)+" -"+to_string(atAtoms[i+1][j].index)+" "+to_string(hasAtoms[i+1][treasures[j][k]].index)+"\n";
+				clauses2+="-"+availAtoms[i][treasures[j][k]].name+" -"+atAtoms[i+1][j].name+" "+hasAtoms[i+1][treasures[j][k]].name+"\n";
 				}
 
 				//category 7
@@ -166,6 +176,8 @@ public:
 					for (int l=0;l<atAtoms[i].size();++l){
 					if (j!=l){
 						clauses+="-"+to_string(availAtoms[i][treasures[j][k]].index)+" -"+to_string(atAtoms[i+1][l].index)+" "+to_string(availAtoms[i+1][treasures[j][k]].index)+"\n";
+						clauses2+="-"+availAtoms[i][treasures[j][k]].name+" -"+atAtoms[i+1][l].name+" "+availAtoms[i+1][treasures[j][k]].name+"\n";
+
 					}
 				}
 				}
@@ -175,8 +187,10 @@ public:
 					for (int l=0;l<atAtoms[i].size();++l){
 					if (j!=l){
 						clauses+="-"+to_string(hasAtoms[i][tolls[j][k]].index)+" -"+to_string(atAtoms[i+1][l].index)+" "+to_string(hasAtoms[i+1][tolls[j][k]].index)+"\n";
+						clauses2+="-"+hasAtoms[i][tolls[j][k]].name+" -"+atAtoms[i+1][l].name+" "+hasAtoms[i+1][tolls[j][k]].name+"\n";
+
 					}
-				}
+					}
 				}
 
 			}
@@ -184,13 +198,18 @@ public:
 			//category 6
 			if (tolls[j].size()>0){
 			clauses+="-"+to_string(atAtoms[i][j].index);
+			clauses2+="-"+atAtoms[i][j].name;
+
 			//cout<<"spec clause: "<<to_string(atAtoms[i][j].index)<<endl;
 			for (int k=0;k<tolls[j].size();++k){
 				clauses+=" -"+to_string(hasAtoms[i][tolls[j][k]].index);
+				clauses2+=" -"+hasAtoms[i][tolls[j][k]].name;
+
 				//cout<<"spec clause2: "<<to_string(hasAtoms[i][tolls[j][k]].index)<<endl;
 
 			}
 			clauses+="\n";
+			clauses2+="\n";
 			}
 
 
@@ -200,32 +219,44 @@ public:
 		//category 2
 		for (int j=0;j<hasAtoms[i].size();++j){
 			clauses+="-"+to_string(hasAtoms[i][j].index)+" -"+to_string(availAtoms[i][j].index)+"\n";
+			clauses2+="-"+hasAtoms[i][j].name+" -"+availAtoms[i][j].name+"\n";
+
 		}
 		if (i<maxSteps){
 			//category 8
 			for (int j=0;j<availAtoms[i].size();++j){
 				clauses+=to_string(availAtoms[i][j].index)+" -"+to_string(availAtoms[i+1][j].index)+"\n";
+				clauses2+=availAtoms[i][j].name+" -"+availAtoms[i+1][j].name+"\n";
 			}
 			//category 9
 			for (int j=0;j<availAtoms[i].size();++j){
 				clauses+=to_string(availAtoms[i][j].index)+" "+to_string(hasAtoms[i][j].index)+" -"+to_string(hasAtoms[i+1][j].index)+"\n";
+				clauses2+=availAtoms[i][j].name+" "+hasAtoms[i][j].name+" -"+hasAtoms[i+1][j].name+"\n";
 			}
 		}
 
 	}
 
 	clauses+=to_string(atAtoms[0][0].index)+"\n";
+	clauses2+=atAtoms[0][0].name+"\n";
 	for (int i=0;i<availAtoms[0].size();++i){
 		clauses+=to_string(availAtoms[0][i].index)+"\n";
+		clauses2+=availAtoms[0][i].name+"\n";
 	}
 	clauses+=to_string(atAtoms[maxSteps][atAtoms[0].size()-1].index)+"\n";
+	clauses2+=atAtoms[maxSteps][atAtoms[0].size()-1].name+"\n";
 
+	clauses2+="0\n";
 	clauses+="0\n";
-	cout<<"clauses: "<<clauses<<endl;
+	cout<<"clauses2: "<<clauses2<<endl;
 
 	ofstream os("clauses");
+	ofstream os2("clauses2");
 	if (! os) { std::cerr<<"Error writing to ..."<< endl; } else {
 	os << clauses;
+	}
+	if (! os2) { std::cerr<<"Error writing to ..."<< endl; } else {
+	os2 << clauses2;
 	}
 }
 };
