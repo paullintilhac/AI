@@ -5,7 +5,6 @@ public:
 	FrontEnd(char* fileName){
 	ifstream infile2(fileName);
 	string str2;
-	//read first line and create nodeList
 	getline(infile2, str2);
 	stringstream ss1(str2);
 	string s;
@@ -13,10 +12,9 @@ public:
 	while (ss1 >> s)
 	    {
 	    nodeList.push_back(s);
-	       
+	        if (ss1.peek() == ',')
+	            ss1.ignore();
 	}
-
-	//read second line and get treasurelist
 	getline(infile2, str2);
 	stringstream ss2(str2);
 	
@@ -25,8 +23,6 @@ public:
 	    {
 	    treasureList.push_back(s);
 	}
-
-	//read third line to get maxSteps
 	getline(infile2, str2);
 	int maxSteps = atoi(str2.c_str());
 	vector<vector<int>> edges; //[currentNode][adjacentNode]
@@ -37,7 +33,8 @@ public:
 	vector<vector<Atom>> availAtoms; //[time][treasure]
 
 	int count = 0;
-	//read remaining lines to get node incidence information
+
+
 	while(getline(infile2,str2)){
 		stringstream ss3(str2);
 		string node;
@@ -47,7 +44,7 @@ public:
 		vector<int> nodeTreasures;
 		vector<int> nodeTolls;
 		ss3>>i;
-		//create 2D array with treasures at each node
+
 		while (ss3 >> i)
 	    {
 	    if (i=="TOLLS"){
@@ -63,7 +60,6 @@ public:
 		}
 		treasures.push_back(nodeTreasures);
 		
-		//create 2D array with tolls at each node
 		while (ss3 >> i)
 	    {
 	    if (i=="NEXT"){
@@ -79,7 +75,6 @@ public:
 		}
 		tolls.push_back(nodeTolls);
 
-		//create 2D list with incident nodes at each node
 		while (ss3 >> i)
 	    {
 	    int ind = -1;
@@ -92,6 +87,12 @@ public:
 	        
 		}
 		edges.push_back(adjacentNodes);
+	}
+	for (int i=0;i<edges.size();++i){
+		for (int j=0;j<edges[i].size();++j){
+			cout<<nodeList[edges[i][j]]<<" ";
+		}
+		cout<<endl;
 	}
 
 	//create set of "At" atoms for each node and time
@@ -106,7 +107,6 @@ public:
 		}
 		atAtoms.push_back(nodes);
 	}
-
 	//create set of "Has" and "available" atoms for each treasure and time
 	for (int i=0;i<=maxSteps;++i){
 		vector<Atom> hasTreasures;
@@ -125,14 +125,15 @@ public:
 		availAtoms.push_back(availTreasures);
 	}
 
-
+	
 	string clauses;
 	//iterate over each time step-- all propositions iterate over time
 	for (int i=0;i<=maxSteps;++i){
 		//iterate over al propositions that require iteration over nodes.
-		for (int j=0;j<atAtoms[i].size();++j){
+		for (int j=0;j<atAtoms[i].size()-1;++j){
+
 			//iterate over all OTHER nodes
-			for (int k=j+1;k<atAtoms[i].size();++k){
+			for (int k=j+1;k<atAtoms[i].size()-1;++k){
 				//category 1
 				clauses+="-"+to_string(atAtoms[i][j].index)+" -"+to_string(atAtoms[i][k].index)+"\n";
 			}
@@ -167,40 +168,28 @@ public:
 				}
 
 				//category 7
-				//iterate over all treasures
-				for (int k=0;k<treasureList.size();++k){
-					//iterate over all other nodes
+				//iterate over all treasures associated with this node
+				for (int k=0;k<treasures[j].size();++k){
+					//for each treasure, iterate over all other nodes
 					for (int l=0;l<atAtoms[i].size();++l){
-						//check if other node is home to this treasre
-						bool isAHome = false;
-						for (int m=0;m<treasures[l].size();++m){
-							if (k==treasures[l][m])
-								isAHome=true;
-						}
-					if (!isAHome){
-						clauses+="-"+to_string(availAtoms[i][k].index)+" -"+to_string(atAtoms[i+1][l].index)+" "+to_string(availAtoms[i+1][k].index)+"\n";
+					if (j!=l){
+						clauses+="-"+to_string(availAtoms[i][treasures[j][k]].index)+" -"+to_string(atAtoms[i+1][l].index)+" "+to_string(availAtoms[i+1][treasures[j][k]].index)+"\n";
 					}
-
 				}
 				}
 
 				//category 10
 				//iterate over each toll associated with this node
-				for (int k=0;k<treasureList.size();++k){
-
+				for (int k=0;k<tolls[j].size();++k){
 					//iterate over all other nodes for this node and treasure
 					for (int l=0;l<atAtoms[i].size();++l){
-						//check if other node is a toll for this treasure
-						bool isAToll=false;
-						for (int m=0;m<tolls[l].size();++m){
-							if (k==tolls[l][m])
-								isAToll=true;
-						}
-					if (!isAToll){
-						clauses+="-"+to_string(hasAtoms[i][k].index)+" -"+to_string(atAtoms[i+1][l].index)+" "+to_string(hasAtoms[i+1][k].index)+"\n";
+					if (j!=l){
+						clauses+="-"+to_string(hasAtoms[i][tolls[j][k]].index)+" -"+to_string(atAtoms[i+1][l].index)+" "+to_string(hasAtoms[i+1][tolls[j][k]].index)+"\n";
+
 					}
 					}
 				}
+
 			}
 
 			//no more restiction for time to be <Tmax
@@ -240,7 +229,7 @@ public:
 	clauses+=to_string(atAtoms[maxSteps][atAtoms[0].size()-1].index)+"\n";
 
 	clauses+="0\n";
-	//cout<<"clauses: "<<clauses<<endl;
+	cout<<"clauses: "<<clauses<<endl;
 
 	ofstream os("clauses");
 	if (! os) { std::cerr<<"Error writing to ..."<< endl; } else {
