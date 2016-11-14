@@ -1,0 +1,5 @@
+in order to compile and run, type
+
+./make.sh [datafile]
+
+
