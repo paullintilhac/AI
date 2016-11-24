@@ -114,7 +114,7 @@ public:
 		vector<Atom> hasTreasures;
 		vector<Atom> availTreasures;
 		for (int j=0;j<treasureList.size();++j){
-			char temp[10];
+			char temp[100];
 			sprintf(temp,"%s",i);
 			string atomString = "Has("+treasureList[j]+","+temp+")";
 			Atom thisAtom(i,treasureList[j],"","Has",atomString,++count);
@@ -139,7 +139,7 @@ public:
 			//iterate over all OTHER nodes
 			for (int k=j+1;k<atAtoms[i].size();++k){
 				//category 1
-				char temp1[10],temp2[10];
+				char temp1[100],temp2[100];
 				sprintf(temp1,"%s",atAtoms[i][j].index);
 				sprintf(temp2,"%s",atAtoms[i][j].index);
 				clauses+="-"+string(temp1)+" -"+string(temp2)+"\n";
@@ -150,12 +150,12 @@ public:
 
 				//category 3
 				if (edges[j].size()>0){
-				char temp[10];
+				char temp[100];
 				sprintf(temp,"%s",atAtoms[i][j].index);
 				clauses+="-"+string(temp);
 				//iterate over all adjacent nodes
 				for (int k=0;k<edges[j].size();++k){
-				char temp2[10];
+				char temp2[100];
 				sprintf(temp2,"%s",atAtoms[i+1][edges[j][k]].index);
 					clauses+=" "+string(temp2);
 				}
@@ -164,12 +164,12 @@ public:
 
 				//category 4
 				if (tolls[j].size()>0){
-				char temp[10];
+				char temp[100];
 				sprintf(temp,"%s",atAtoms[i+1][j].index);
 				clauses+="-"+string(temp);
 				//iterate over all tolls associated with this node
 				for (int k=0;k<tolls[j].size();++k){
-				char temp2[10];
+				char temp2[100];
 				sprintf(temp2,"%s",hasAtoms[i][tolls[j][k]].index);
 					clauses+=" "+string(temp2);
 				}
@@ -179,7 +179,7 @@ public:
 				//category 5
 				//iterate over all treasures associated with this node
 				for (int k=0;k<treasures[j].size();++k){
-				char temp2[10],temp3[10],temp4[10];
+				char temp2[100],temp3[100],temp4[100];
 				sprintf(temp2,"%s",availAtoms[i][treasures[j][k]].index);
 				sprintf(temp3,"%s",atAtoms[i+1][j].index);
 				sprintf(temp4,"%s",hasAtoms[i+1][treasures[j][k]].index);
@@ -198,7 +198,7 @@ public:
 								isAHome=true;
 						}
 					if (!isAHome){
-						char temp1[10],temp2[10],temp3[10];
+						char temp1[100],temp2[100],temp3[100];
 						sprintf(temp1,"%s",availAtoms[i][k].index);
 						sprintf(temp2,"%s",atAtoms[i+1][l].index);
 						sprintf(temp3,"%s",availAtoms[i+1][k].index);
@@ -222,7 +222,7 @@ public:
 								isAToll=true;
 						}
 					if (!isAToll){
-						char temp1[10], temp2[10],temp3[10];
+						char temp1[100], temp2[100],temp3[100];
 						sprintf(temp1,"%s",hasAtoms[i][k].index);
 						sprintf(temp2,"%s",atAtoms[i+1][l].index);
 						sprintf(temp3,"%s",hasAtoms[i+1][k].index);
@@ -235,12 +235,12 @@ public:
 			//no more restiction for time to be <Tmax
 			//category 6
 			if (tolls[j].size()>0){
-			char temp1[10];
+			char temp1[100];
 			sprintf(temp1,"%s",atAtoms[i][j].index);
 			clauses+="-"+string(temp1);
 			//iterate over all tolls associated with this node
 			for (int k=0;k<tolls[j].size();++k){
-				char temp[10];
+				char temp[100];
 				sprintf(temp,"%s",hasAtoms[i][tolls[j][k]].index);
 				clauses+=" -"+string(temp);
 			}
@@ -251,7 +251,7 @@ public:
 
 		//category 2
 		for (int j=0;j<hasAtoms[i].size();++j){
-			chat temp1[10], temp2[10];
+			char temp1[100], temp2[100];
 			sprintf(temp1,"%s",hasAtoms[i][j].index);
 			sprintf(temp2,"%s",availAtoms[i][j].index);
 			clauses+="-"+string(temp1)+" -"+string(temp2)+"\n";
@@ -259,14 +259,14 @@ public:
 		if (i<maxSteps){
 			//category 8
 			for (int j=0;j<availAtoms[i].size();++j){
-				char temp1[10],temp2[10],temp3[10];
+				char temp1[100],temp2[100],temp3[100];
 				sprintf(temp1,"%s",availAtoms[i][j].index);
 				sprintf(temp2,"%s",availAtoms[i+1][j].index);
-				clauses+=string(availAtoms[i][j].index)+" -"+string(availAtoms[i+1][j].index)+"\n";
+				clauses+=string(temp1)+" -"+string(temp2)+"\n";
 			}
 			//category 9
 			for (int j=0;j<availAtoms[i].size();++j){
-				char temp1[10], temp2[10],temp3[10];
+				char temp1[100], temp2[100],temp3[100];
 				sprintf(temp1,"%s",availAtoms[i][j].index);
 				sprintf(temp2,"%s",hasAtoms[i][j].index);
 				sprintf(temp3,"%s",hasAtoms[i+1][j].index);
@@ -275,11 +275,11 @@ public:
 		}
 
 	}
-	char temp[10];
-	sprintf(temp,"%s",asAtoms[0][0].index);
-	clauses+=temp+"\n";
+	char temp[100];
+	sprintf(temp,"%s",hasAtoms[0][0].index);
+	clauses+=string(temp)+"\n";
 	for (int i=0;i<availAtoms[0].size();++i){
-		char temp2[10];
+		char temp2[100];
 		sprintf(temp2,"%s",availAtoms[0][i].index);
 		clauses+=string(temp2)+"\n";
 	}
