@@ -118,7 +118,7 @@ public:
 		return(clauses);
 	};
 
-	vector<int> checkForUnits(vector<vector<int>> c){
+	vector<int> checkForUnits(vector<vector<int> > c){
 		vector<int> literalUpdates;
 		for (int i=0;i<c.size();++i){
 			if (c[i].size()==1 && c[i][0]!=0){
@@ -134,7 +134,7 @@ public:
 		return literalUpdates;
 	};
 
-	vector<int> checkForPureLiterals(vector<vector<int>> c){
+	vector<int> checkForPureLiterals(vector<vector<int> > c){
 		vector<int> polarity;
 		vector<bool> pure;
 		vector<int> pureUpdates;
