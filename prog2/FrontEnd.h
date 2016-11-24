@@ -1,4 +1,4 @@
-
+#include <stdlib.h>
 class FrontEnd{
 public:
 	vector<Atom> atoms;
@@ -29,12 +29,12 @@ public:
 	//read third line to get maxSteps
 	getline(infile2, str2);
 	int maxSteps = atoi(str2.c_str());
-	vector<vector<int>> edges; //[currentNode][adjacentNode]
-	vector<vector<int>> treasures;
-	vector<vector<int>> tolls;
-	vector<vector<Atom>> atAtoms; //[time][node]
-	vector<vector<Atom>> hasAtoms; //[time][treasure]
-	vector<vector<Atom>> availAtoms; //[time][treasure]
+	vector<vector<int> > edges; //[currentNode][adjacentNode]
+	vector<vector<int> > treasures;
+	vector<vector<int> > tolls;
+	vector<vector<Atom> > atAtoms; //[time][node]
+	vector<vector<Atom> > hasAtoms; //[time][treasure]
+	vector<vector<Atom> > availAtoms; //[time][treasure]
 
 	int count = 0;
 	//read remaining lines to get node incidence information
@@ -98,7 +98,9 @@ public:
 	for (int i=0;i<=maxSteps;++i){
 		vector<Atom> nodes;
 		for (int j=0;j<nodeList.size();++j){
-			string atomString = "At("+nodeList[j]+","+to_string(i)+")";
+			char temp[20];
+			sprintf(temp,"%s",i);
+			string atomString = "At("+nodeList[j]+","+temp+")";
 			Atom thisAtom(i,"",nodeList[j],"At",atomString,++count);
 			nodes.push_back(thisAtom);
 			atoms.push_back(thisAtom);
@@ -112,11 +114,14 @@ public:
 		vector<Atom> hasTreasures;
 		vector<Atom> availTreasures;
 		for (int j=0;j<treasureList.size();++j){
-			string atomString = "Has("+treasureList[j]+","+to_string(i)+")";
+			char temp[10];
+			sprintf(temp,"%s",i);
+			string atomString = "Has("+treasureList[j]+","+temp+")";
 			Atom thisAtom(i,treasureList[j],"","Has",atomString,++count);
 			hasTreasures.push_back(thisAtom);
 			atoms.push_back(thisAtom);
-			atomString = "Available("+treasureList[j]+","+to_string(i)+")";
+			sprintf(temp,"%s",i);
+			atomString = "Available("+treasureList[j]+","+temp+")";
 			Atom thisAtom2(i,treasureList[j],"","Available",atomString,++count);
 			availTreasures.push_back(thisAtom2);
 			atoms.push_back(thisAtom2);
@@ -134,7 +139,10 @@ public:
 			//iterate over all OTHER nodes
 			for (int k=j+1;k<atAtoms[i].size();++k){
 				//category 1
-				clauses+="-"+to_string(atAtoms[i][j].index)+" -"+to_string(atAtoms[i][k].index)+"\n";
+				char temp1[10],temp2[10];
+				sprintf(temp1,"%s",atAtoms[i][j].index);
+				sprintf(temp2,"%s",atAtoms[i][j].index);
+				clauses+="-"+string(temp1)+" -"+string(temp2)+"\n";
 			}
 
 			//for propositions involving T-1 steps, cause they relate t to t+1 or t-1
@@ -142,20 +150,28 @@ public:
 
 				//category 3
 				if (edges[j].size()>0){
-				clauses+="-"+to_string(atAtoms[i][j].index);
+				char temp[10];
+				sprintf(temp,"%s",atAtoms[i][j].index);
+				clauses+="-"+string(temp);
 				//iterate over all adjacent nodes
 				for (int k=0;k<edges[j].size();++k){
-					clauses+=" "+to_string(atAtoms[i+1][edges[j][k]].index);
+				char temp2[10];
+				sprintf(temp2,"%s",atAtoms[i+1][edges[j][k]].index);
+					clauses+=" "+string(temp2);
 				}
 				clauses+="\n";
 				}
 
 				//category 4
 				if (tolls[j].size()>0){
-				clauses+="-"+to_string(atAtoms[i+1][j].index);
+				char temp[10];
+				sprintf(temp,"%s",atAtoms[i+1][j].index);
+				clauses+="-"+string(temp);
 				//iterate over all tolls associated with this node
 				for (int k=0;k<tolls[j].size();++k){
-					clauses+=" "+to_string(hasAtoms[i][tolls[j][k]].index);
+				char temp2[10];
+				sprintf(temp2,"%s",hasAtoms[i][tolls[j][k]].index);
+					clauses+=" "+string(temp2);
 				}
 				clauses+="\n";
 				}
@@ -163,7 +179,11 @@ public:
 				//category 5
 				//iterate over all treasures associated with this node
 				for (int k=0;k<treasures[j].size();++k){
-				clauses+="-"+to_string(availAtoms[i][treasures[j][k]].index)+" -"+to_string(atAtoms[i+1][j].index)+" "+to_string(hasAtoms[i+1][treasures[j][k]].index)+"\n";
+				char temp2[10],temp3[10],temp4[10];
+				sprintf(temp2,"%s",availAtoms[i][treasures[j][k]].index);
+				sprintf(temp3,"%s",atAtoms[i+1][j].index);
+				sprintf(temp4,"%s",hasAtoms[i+1][treasures[j][k]].index);
+				clauses+="-"+string(temp2)+" -"+string(temp3)+" "+string(temp4)+"\n";
 				}
 
 				//category 7
@@ -178,11 +198,16 @@ public:
 								isAHome=true;
 						}
 					if (!isAHome){
-						clauses+="-"+to_string(availAtoms[i][k].index)+" -"+to_string(atAtoms[i+1][l].index)+" "+to_string(availAtoms[i+1][k].index)+"\n";
+						char temp1[10],temp2[10],temp3[10];
+						sprintf(temp1,"%s",availAtoms[i][k].index);
+						sprintf(temp2,"%s",atAtoms[i+1][l].index);
+						sprintf(temp3,"%s",availAtoms[i+1][k].index);
+						clauses+="-"+string(temp1)+" -"+string(temp2)+" "+string(temp3)+"\n";
 					}
 
 				}
 				}
+
 
 				//category 10
 				//iterate over each toll associated with this node
@@ -197,7 +222,11 @@ public:
 								isAToll=true;
 						}
 					if (!isAToll){
-						clauses+="-"+to_string(hasAtoms[i][k].index)+" -"+to_string(atAtoms[i+1][l].index)+" "+to_string(hasAtoms[i+1][k].index)+"\n";
+						char temp1[10], temp2[10],temp3[10];
+						sprintf(temp1,"%s",hasAtoms[i][k].index);
+						sprintf(temp2,"%s",atAtoms[i+1][l].index);
+						sprintf(temp3,"%s",hasAtoms[i+1][k].index);
+						clauses+="-"+string(temp1)+" -"+string(temp2)+" "+string(temp3)+"\n";
 					}
 					}
 				}
@@ -206,10 +235,14 @@ public:
 			//no more restiction for time to be <Tmax
 			//category 6
 			if (tolls[j].size()>0){
-			clauses+="-"+to_string(atAtoms[i][j].index);
+			char temp1[10];
+			sprintf(temp1,"%s",atAtoms[i][j].index);
+			clauses+="-"+string(temp1);
 			//iterate over all tolls associated with this node
 			for (int k=0;k<tolls[j].size();++k){
-				clauses+=" -"+to_string(hasAtoms[i][tolls[j][k]].index);
+				char temp[10];
+				sprintf(temp,"%s",hasAtoms[i][tolls[j][k]].index);
+				clauses+=" -"+string(temp);
 			}
 			clauses+="\n";
 			}
@@ -218,26 +251,40 @@ public:
 
 		//category 2
 		for (int j=0;j<hasAtoms[i].size();++j){
-			clauses+="-"+to_string(hasAtoms[i][j].index)+" -"+to_string(availAtoms[i][j].index)+"\n";
+			chat temp1[10], temp2[10];
+			sprintf(temp1,"%s",hasAtoms[i][j].index);
+			sprintf(temp2,"%s",availAtoms[i][j].index);
+			clauses+="-"+string(temp1)+" -"+string(temp2)+"\n";
 		}
 		if (i<maxSteps){
 			//category 8
 			for (int j=0;j<availAtoms[i].size();++j){
-				clauses+=to_string(availAtoms[i][j].index)+" -"+to_string(availAtoms[i+1][j].index)+"\n";
+				char temp1[10],temp2[10],temp3[10];
+				sprintf(temp1,"%s",availAtoms[i][j].index);
+				sprintf(temp2,"%s",availAtoms[i+1][j].index);
+				clauses+=string(availAtoms[i][j].index)+" -"+string(availAtoms[i+1][j].index)+"\n";
 			}
 			//category 9
 			for (int j=0;j<availAtoms[i].size();++j){
-				clauses+=to_string(availAtoms[i][j].index)+" "+to_string(hasAtoms[i][j].index)+" -"+to_string(hasAtoms[i+1][j].index)+"\n";
+				char temp1[10], temp2[10],temp3[10];
+				sprintf(temp1,"%s",availAtoms[i][j].index);
+				sprintf(temp2,"%s",hasAtoms[i][j].index);
+				sprintf(temp3,"%s",hasAtoms[i+1][j].index);
+				clauses+=string(temp1)+" "+string(temp2)+" -"+string(temp3)+"\n";
 			}
 		}
 
 	}
-
-	clauses+=to_string(atAtoms[0][0].index)+"\n";
+	char temp[10];
+	sprintf(temp,"%s",asAtoms[0][0].index);
+	clauses+=temp+"\n";
 	for (int i=0;i<availAtoms[0].size();++i){
-		clauses+=to_string(availAtoms[0][i].index)+"\n";
+		char temp2[10];
+		sprintf(temp2,"%s",availAtoms[0][i].index);
+		clauses+=string(temp2)+"\n";
 	}
-	clauses+=to_string(atAtoms[maxSteps][atAtoms[0].size()-1].index)+"\n";
+	sprintf(temp,"%s",atAtoms[maxSteps][atAtoms[0].size()-1].index);
+	clauses+=string(temp)+"\n";
 
 	clauses+="0\n";
 	//cout<<"clauses: "<<clauses<<endl;

@@ -1,21 +1,22 @@
 #ifndef CLAUSES_H
 #define CLAUSES_H
 #include <vector>
+#include <string>
 using namespace std;
 
 class Clauses{
 public:
-	vector<vector<int>> sentences;
+	vector<vector<int> > sentences;
 	vector<int> states;
 	string status,returnString;
-	public: Clauses(vector<vector<int>> c,vector<int> s){
+	public: Clauses(vector<vector<int> > c,vector<int> s){
 
 		sentences = c;
 		states = s;
 		status = "unresolved";
 		
 	};
-	public: getReturnString(){
+	public: void getReturnString(){
 		if (status=="success"){
 		returnString="";
 		for (int i=0;i<states.size();++i){
@@ -25,7 +26,7 @@ public:
 		} else{
 			TF = "F";
 		}
-		returnString +=to_string(i+1)+" "+TF+"\n";
+		returnString +=(i+1)+" "+TF+"\n";
 		}
 		returnString +="0\n";
 		} else{
