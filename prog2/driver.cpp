@@ -18,7 +18,7 @@ int main(int argc, char* argv[]){
 	string str;
 
 	//digest clauses into 2-D vector
-	vector<vector<int>> clauseSet;
+	vector<vector<int> > clauseSet;
 	int count=0;
 \
 	while (getline(infile, str)) {

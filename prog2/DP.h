@@ -181,7 +181,7 @@ public:
 
 	//reducer takes literal value and state info and returns updated state
 	Clauses reduce(int lit,Clauses clauses,int depth){
-		vector<vector<int>> c  = clauses.sentences;
+		vector<vector<int> > c  = clauses.sentences;
 		clauses.states[depth] = lit;
 		if (DEBUG){
 		if (lit<0)
@@ -205,7 +205,9 @@ public:
 					clauseString+="\n";
 					cout<<"successfully eliminating clause "<<clauseString<<endl;
 					}
-					c[j] = {0};
+					vector<int> nullList;
+					nullList.push_back(0);
+					c[j] = nullList;
 					break;
 				}
 				//if negative of literal appears in clause, there are two cases
@@ -241,7 +243,7 @@ public:
 		}
 
 		//cleanup step.
-		vector<vector<int>>::iterator i = c.begin();
+		vector<vector<int> >::iterator i = c.begin();
 		while (i!=c.end()){
 			//if there are clauses with just a "0" value, 
 			//this was set because of successful clause elimination 
