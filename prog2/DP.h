@@ -205,9 +205,11 @@ public:
 					clauseString+="\n";
 					cout<<"successfully eliminating clause "<<clauseString<<endl;
 					}
-					vector<int> nullList;
-					nullList.push_back(0);
-					c[j] = nullList;
+
+					vector<int> temp;
+					temp.push_back(0);
+					c[j] = temp;
+
 					break;
 				}
 				//if negative of literal appears in clause, there are two cases

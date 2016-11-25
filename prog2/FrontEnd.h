@@ -3,7 +3,10 @@ class FrontEnd{
 public:
 	vector<Atom> atoms;
 	FrontEnd(char* fileName){
-
+	ofstream clauses("clauses");
+	// if (! os) { std::cerr<<"Error writing to ..."<< endl; } else {
+	// os << clauses;
+	// }
 	ifstream infile2(fileName);
 	string str2;
 	//read first line and create nodeList
@@ -99,9 +102,13 @@ public:
 	for (int i=0;i<=maxSteps;++i){
 		vector<Atom> nodes;
 		for (int j=0;j<nodeList.size();++j){
-			char temp[100];
-			sprintf(temp,"%s",i);
-			string atomString = "At("+nodeList[j]+","+temp+")";
+
+			stringstream tempStream;
+			tempStream<<"At("<<nodeList[j]<<","<<(i)<<")";
+			string atomString;
+			tempStream>>atomString;
+
+
 			Atom thisAtom(i,"",nodeList[j],"At",atomString,++count);
 			nodes.push_back(thisAtom);
 			atoms.push_back(thisAtom);
@@ -109,21 +116,26 @@ public:
 		}
 		atAtoms.push_back(nodes);
 	}
-			cout<<"hello"<<endl;
 
 	//create set of "Has" and "available" atoms for each treasure and time
 	for (int i=0;i<=maxSteps;++i){
 		vector<Atom> hasTreasures;
 		vector<Atom> availTreasures;
 		for (int j=0;j<treasureList.size();++j){
-			char temp[100];
-			sprintf(temp,"%s",i);
-			string atomString = "Has("+treasureList[j]+","+temp+")";
+
+			stringstream tempStream;
+			tempStream<<"Has("<<treasureList[j]<<","<<(i)<<")";
+			string atomString;
+			tempStream>>atomString;
 			Atom thisAtom(i,treasureList[j],"","Has",atomString,++count);
 			hasTreasures.push_back(thisAtom);
 			atoms.push_back(thisAtom);
-			sprintf(temp,"%s",i);
-			atomString = "Available("+treasureList[j]+","+temp+")";
+			stringstream tempStream2;
+			tempStream2<<"Available("<<treasureList[j]<<","<<(i)<<")";
+			
+			tempStream2>>atomString;
+
+
 			Atom thisAtom2(i,treasureList[j],"","Available",atomString,++count);
 			availTreasures.push_back(thisAtom2);
 			atoms.push_back(thisAtom2);
@@ -132,7 +144,7 @@ public:
 		availAtoms.push_back(availTreasures);
 	}
 
-	string clauses;
+
 	//iterate over each time step-- all propositions iterate over time
 	for (int i=0;i<=maxSteps;++i){
 		//iterate over al propositions that require iteration over nodes.
@@ -140,10 +152,10 @@ public:
 			//iterate over all OTHER nodes
 			for (int k=j+1;k<atAtoms[i].size();++k){
 				//category 1
-				char temp1[100],temp2[100];
-				sprintf(temp1,"%s",atAtoms[i][j].index);
-				sprintf(temp2,"%s",atAtoms[i][j].index);
-				clauses+="-"+string(temp1)+" -"+string(temp2)+"\n";
+
+				clauses<<"-"<<(atAtoms[i][j].index)<<" -"<<(atAtoms[i][k].index)<<"\n";
+
+
 			}
 
 			//for propositions involving T-1 steps, cause they relate t to t+1 or t-1
@@ -151,40 +163,33 @@ public:
 
 				//category 3
 				if (edges[j].size()>0){
-				char temp[100];
-				sprintf(temp,"%s",atAtoms[i][j].index);
-				clauses+="-"+string(temp);
+				clauses<<"-"<<(atAtoms[i][j].index);
 				//iterate over all adjacent nodes
 				for (int k=0;k<edges[j].size();++k){
-				char temp2[100];
-				sprintf(temp2,"%s",atAtoms[i+1][edges[j][k]].index);
-					clauses+=" "+string(temp2);
+					clauses<<" "<<(atAtoms[i+1][edges[j][k]].index);
+
+
 				}
-				clauses+="\n";
+				clauses<<"\n";
 				}
 
 				//category 4
 				if (tolls[j].size()>0){
-				char temp[100];
-				sprintf(temp,"%s",atAtoms[i+1][j].index);
-				clauses+="-"+string(temp);
+				clauses<<"-"<<(atAtoms[i+1][j].index);
 				//iterate over all tolls associated with this node
 				for (int k=0;k<tolls[j].size();++k){
-				char temp2[100];
-				sprintf(temp2,"%s",hasAtoms[i][tolls[j][k]].index);
-					clauses+=" "+string(temp2);
+					clauses<<" "<<(hasAtoms[i][tolls[j][k]].index);
+
+
 				}
-				clauses+="\n";
+				clauses<<"\n";
 				}
 
 				//category 5
 				//iterate over all treasures associated with this node
 				for (int k=0;k<treasures[j].size();++k){
-				char temp2[100],temp3[100],temp4[100];
-				sprintf(temp2,"%s",availAtoms[i][treasures[j][k]].index);
-				sprintf(temp3,"%s",atAtoms[i+1][j].index);
-				sprintf(temp4,"%s",hasAtoms[i+1][treasures[j][k]].index);
-				clauses+="-"+string(temp2)+" -"+string(temp3)+" "+string(temp4)+"\n";
+				clauses<<"-"<<(availAtoms[i][treasures[j][k]].index)<<" -"<<(atAtoms[i+1][j].index)<<" "<<(hasAtoms[i+1][treasures[j][k]].index)<<"\n";
+
 				}
 
 				//category 7
@@ -199,11 +204,8 @@ public:
 								isAHome=true;
 						}
 					if (!isAHome){
-						char temp1[100],temp2[100],temp3[100];
-						sprintf(temp1,"%s",availAtoms[i][k].index);
-						sprintf(temp2,"%s",atAtoms[i+1][l].index);
-						sprintf(temp3,"%s",availAtoms[i+1][k].index);
-						clauses+="-"+string(temp1)+" -"+string(temp2)+" "+string(temp3)+"\n";
+						clauses<<"-"<<(availAtoms[i][k].index)<<" -"<<(atAtoms[i+1][l].index)<<" "<<(availAtoms[i+1][k].index)<<"\n";
+
 					}
 
 				}
@@ -223,11 +225,8 @@ public:
 								isAToll=true;
 						}
 					if (!isAToll){
-						char temp1[100], temp2[100],temp3[100];
-						sprintf(temp1,"%s",hasAtoms[i][k].index);
-						sprintf(temp2,"%s",atAtoms[i+1][l].index);
-						sprintf(temp3,"%s",hasAtoms[i+1][k].index);
-						clauses+="-"+string(temp1)+" -"+string(temp2)+" "+string(temp3)+"\n";
+						clauses<<"-"<<(hasAtoms[i][k].index)<<" -"<<(atAtoms[i+1][l].index)<<" "<<(hasAtoms[i+1][k].index)<<"\n";
+
 					}
 					}
 				}
@@ -236,64 +235,47 @@ public:
 			//no more restiction for time to be <Tmax
 			//category 6
 			if (tolls[j].size()>0){
-			char temp1[100];
-			sprintf(temp1,"%s",atAtoms[i][j].index);
-			clauses+="-"+string(temp1);
+			clauses<<"-"<<(atAtoms[i][j].index);
 			//iterate over all tolls associated with this node
 			for (int k=0;k<tolls[j].size();++k){
-				char temp[100];
-				sprintf(temp,"%s",hasAtoms[i][tolls[j][k]].index);
-				clauses+=" -"+string(temp);
+				clauses<<" -"<<(hasAtoms[i][tolls[j][k]].index);
+
 			}
-			clauses+="\n";
+			clauses<<"\n";
 			}
 		}
 		//done iterating over nodes
 
 		//category 2
 		for (int j=0;j<hasAtoms[i].size();++j){
-			char temp1[100], temp2[100];
-			sprintf(temp1,"%s",hasAtoms[i][j].index);
-			sprintf(temp2,"%s",availAtoms[i][j].index);
-			clauses+="-"+string(temp1)+" -"+string(temp2)+"\n";
+			clauses<<"-"<<(hasAtoms[i][j].index)<<" -"<<(availAtoms[i][j].index)<<"\n";
+
 		}
 		if (i<maxSteps){
 			//category 8
 			for (int j=0;j<availAtoms[i].size();++j){
-				char temp1[100],temp2[100],temp3[100];
-				sprintf(temp1,"%s",availAtoms[i][j].index);
-				sprintf(temp2,"%s",availAtoms[i+1][j].index);
-				clauses+=string(temp1)+" -"+string(temp2)+"\n";
+				clauses<<(availAtoms[i][j].index)<<" -"<<(availAtoms[i+1][j].index)<<"\n";
 			}
 			//category 9
 			for (int j=0;j<availAtoms[i].size();++j){
-				char temp1[100], temp2[100],temp3[100];
-				sprintf(temp1,"%s",availAtoms[i][j].index);
-				sprintf(temp2,"%s",hasAtoms[i][j].index);
-				sprintf(temp3,"%s",hasAtoms[i+1][j].index);
-				clauses+=string(temp1)+" "+string(temp2)+" -"+string(temp3)+"\n";
+				clauses<<(availAtoms[i][j].index)<<" "<<(hasAtoms[i][j].index)<<" -"<<(hasAtoms[i+1][j].index)<<"\n";
+
 			}
 		}
 
 	}
-	char temp[100];
-	sprintf(temp,"%s",hasAtoms[0][0].index);
-	clauses+=string(temp)+"\n";
-	for (int i=0;i<availAtoms[0].size();++i){
-		char temp2[100];
-		sprintf(temp2,"%s",availAtoms[0][i].index);
-		clauses+=string(temp2)+"\n";
-	}
-	sprintf(temp,"%s",atAtoms[maxSteps][atAtoms[0].size()-1].index);
-	clauses+=string(temp)+"\n";
 
-	clauses+="0\n";
+	clauses<<(atAtoms[0][0].index)<<"\n";
+	for (int i=0;i<availAtoms[0].size();++i){
+		clauses<<(availAtoms[0][i].index)<<"\n";
+	}
+	clauses<<(atAtoms[maxSteps][atAtoms[0].size()-1].index)<<"\n";
+
+
+	clauses<<"0\n";
 	//cout<<"clauses: "<<clauses<<endl;
 
-	ofstream os("clauses");
-	if (! os) { std::cerr<<"Error writing to ..."<< endl; } else {
-	os << clauses;
-	}
+	
 	
 }
 };

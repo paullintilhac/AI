@@ -20,7 +20,7 @@ int main(int argc, char* argv[]){
 	//digest clauses into 2-D vector
 	vector<vector<int> > clauseSet;
 	int count=0;
-\
+
 	while (getline(infile, str)) {
 
 		vector<int> thisLine;

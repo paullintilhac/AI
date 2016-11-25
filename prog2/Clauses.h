@@ -19,6 +19,7 @@ public:
 	public: void getReturnString(){
 		if (status=="success"){
 		returnString="";
+		stringstream ss;
 		for (int i=0;i<states.size();++i){
 		string TF = "";
 		if (states[i]>0){
@@ -26,13 +27,16 @@ public:
 		} else{
 			TF = "F";
 		}
-		returnString +=(i+1)+" "+TF+"\n";
+
+		ss<<i+1<<" "<<TF<<endl;
+
 		}
+		returnString=ss.str();
 		returnString +="0\n";
 		} else{
 			returnString = "0\n";
 		}
-
+		//cout<<"returnString: "<<returnString<<endl;
 		this->returnString = returnString;
 	};
 	
