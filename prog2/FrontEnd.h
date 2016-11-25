@@ -107,8 +107,6 @@ public:
 			tempStream<<"At("<<nodeList[j]<<","<<(i)<<")";
 			string atomString;
 			tempStream>>atomString;
-
-
 			Atom thisAtom(i,"",nodeList[j],"At",atomString,++count);
 			nodes.push_back(thisAtom);
 			atoms.push_back(thisAtom);
@@ -136,6 +134,7 @@ public:
 			tempStream2>>atomString;
 
 
+
 			Atom thisAtom2(i,treasureList[j],"","Available",atomString,++count);
 			availTreasures.push_back(thisAtom2);
 			atoms.push_back(thisAtom2);
@@ -154,8 +153,6 @@ public:
 				//category 1
 
 				clauses<<"-"<<(atAtoms[i][j].index)<<" -"<<(atAtoms[i][k].index)<<"\n";
-
-
 			}
 
 			//for propositions involving T-1 steps, cause they relate t to t+1 or t-1
@@ -167,6 +164,7 @@ public:
 				//iterate over all adjacent nodes
 				for (int k=0;k<edges[j].size();++k){
 					clauses<<" "<<(atAtoms[i+1][edges[j][k]].index);
+
 
 
 				}
@@ -181,6 +179,7 @@ public:
 					clauses<<" "<<(hasAtoms[i][tolls[j][k]].index);
 
 
+
 				}
 				clauses<<"\n";
 				}
@@ -189,6 +188,7 @@ public:
 				//iterate over all treasures associated with this node
 				for (int k=0;k<treasures[j].size();++k){
 				clauses<<"-"<<(availAtoms[i][treasures[j][k]].index)<<" -"<<(atAtoms[i+1][j].index)<<" "<<(hasAtoms[i+1][treasures[j][k]].index)<<"\n";
+
 
 				}
 
@@ -205,6 +205,7 @@ public:
 						}
 					if (!isAHome){
 						clauses<<"-"<<(availAtoms[i][k].index)<<" -"<<(atAtoms[i+1][l].index)<<" "<<(availAtoms[i+1][k].index)<<"\n";
+
 
 					}
 
@@ -227,6 +228,7 @@ public:
 					if (!isAToll){
 						clauses<<"-"<<(hasAtoms[i][k].index)<<" -"<<(atAtoms[i+1][l].index)<<" "<<(hasAtoms[i+1][k].index)<<"\n";
 
+
 					}
 					}
 				}
@@ -240,6 +242,7 @@ public:
 			for (int k=0;k<tolls[j].size();++k){
 				clauses<<" -"<<(hasAtoms[i][tolls[j][k]].index);
 
+
 			}
 			clauses<<"\n";
 			}
@@ -249,6 +252,7 @@ public:
 		//category 2
 		for (int j=0;j<hasAtoms[i].size();++j){
 			clauses<<"-"<<(hasAtoms[i][j].index)<<" -"<<(availAtoms[i][j].index)<<"\n";
+
 
 		}
 		if (i<maxSteps){
@@ -260,6 +264,7 @@ public:
 			for (int j=0;j<availAtoms[i].size();++j){
 				clauses<<(availAtoms[i][j].index)<<" "<<(hasAtoms[i][j].index)<<" -"<<(hasAtoms[i+1][j].index)<<"\n";
 
+
 			}
 		}
 
@@ -270,6 +275,7 @@ public:
 		clauses<<(availAtoms[0][i].index)<<"\n";
 	}
 	clauses<<(atAtoms[maxSteps][atAtoms[0].size()-1].index)<<"\n";
+
 
 
 	clauses<<"0\n";

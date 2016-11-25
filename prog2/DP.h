@@ -210,6 +210,7 @@ public:
 					temp.push_back(0);
 					c[j] = temp;
 
+
 					break;
 				}
 				//if negative of literal appears in clause, there are two cases

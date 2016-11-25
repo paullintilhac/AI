@@ -30,6 +30,7 @@ public:
 
 		ss<<i+1<<" "<<TF<<endl;
 
+
 		}
 		returnString=ss.str();
 		returnString +="0\n";
