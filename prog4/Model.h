@@ -12,7 +12,7 @@ public:
 	vector<string> words;
 	Model(vector<vector<double> > lp, vector<double> lpv,vector<string> c,vector<string> w): words(w),categories(c),logProbVec(lpv),logProbs(lp){};
 	
-	predict(vector<Bio> testSet){
+	void predict(vector<Bio> testSet){
 		vector<vector<double> > testL;
 		for (int i=0;i<testSet.size();i++){
 			vector<double> catL;
