@@ -1,0 +1,4 @@
+to comile and run, simply type
+
+./make.sh [training set] [testset] [stop words]
+

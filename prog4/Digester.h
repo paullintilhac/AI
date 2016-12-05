@@ -22,6 +22,7 @@ public:
 	vector<vector<double> > freqs;
 	vector<vector<double> > probs;
 	vector<vector<double> > logProbs;
+	vector<vector<double> > counts;
 	vector<double> probVec;
 	vector<double> freqVec;
 	vector<double> logProbVec;
@@ -42,7 +43,6 @@ public:
 		       
 		    }
 		}
-		cout<<"stopWords.length(): "<<stopWords.size()<<endl;
 		string str;
 		//digest clauses into 2-D vector
 		//vector<vector<int> > clauseSet;
@@ -56,12 +56,17 @@ public:
 		while (getline(infile, str)) {
 			//cout<<"newBio: "<<newBio<<endl;
 			if (str.length() == 1){
+				bool success = getline(infile,str);
+				if (!success)
+					break;
+				//cout<<"success? "<<success<<endl;
+				//cout<<"final str: "<<str<<endl;
+				if (str.length()>1){//check for multiple blank lines
 				newBio = 1;
-				Bio thisBio(words,index,cat,name);
-				bios.push_back(thisBio);
+				
 				index++;
+			}
 				//cout<<"null line"<<endl;
-				continue;
 			}
 
 			if (newBio==1){
@@ -138,20 +143,12 @@ public:
 		    words.push_back(i);
 		       
 		    }
+		    Bio thisBio(words,index,cat,name);
+			bios.push_back(thisBio);
 		}
-
-		
-		
-
-
-for (int i=0; i<catBag.size();i++){
-	cout<<"category: -"<<catBag[i]<<"-"<<endl;
-}
-
-	// cout<<"  ";
+//cout<<"word bag";
 	// for (int i=0;i<wordBag.size();i++){
-	// 	cout<<wordBag[i]<<"  ";
-	// 	cout.flush();
+	// 	cout<<"_"<<wordBag[i]<<"_  "<<endl;;
 	// }
 	// cout<<endl;
 	// for (int i=0;i<catBag.size();i++){
@@ -163,6 +160,8 @@ for (int i=0; i<catBag.size();i++){
 	// 	}
 	// 	cout<<endl;
 	// }
+	// 
+		//cout<<"BIOS SIZE: "<<bios.size()<<endl;
  }
  	Model train(double eps){
  		//get conditional and absolute probabilities
@@ -171,12 +170,15 @@ for (int i=0; i<catBag.size();i++){
 			vector<double> probRow;
 			vector<double> freqRow;
 			vector<double> logProbRow;
+			vector<double> countRow;
 			for (int j=0;j<wordBag.size();j++){
 				double count=0;
 				double totalCount=0;
 				for (int k=0;k<bios.size();k++){
+					//cout<<"catBag[i]: "<<catBag[i]<<", wordBag[j]: "<<wordBag[j]<<", bios category: "<<bios[k].category<<endl;
 					if (bios[k].category!=catBag[i] )
 						continue;
+					//if (catBag[i] == "Government" &&wordBag[j]=="politician")
 					totalCount++;
 					bool hasWord=false;
 					//cout<<"i: "<<i<<", j: "<<j<<", k: "<<k<<endl;
@@ -189,11 +191,12 @@ for (int i=0; i<catBag.size();i++){
 					if (hasWord)
 						count++;
 				}
-
+				countRow.push_back(count);
 				freqRow.push_back(count/totalCount);
 				probRow.push_back((count/totalCount+eps)/(1+2*eps));
 				logProbRow.push_back(-log2((count/totalCount+eps)/(1+2*eps)));
 			}
+			counts.push_back(countRow);
 			freqs.push_back(freqRow);
 			probs.push_back(probRow);
 			logProbs.push_back(logProbRow);
@@ -207,10 +210,28 @@ for (int i=0; i<catBag.size();i++){
 				if (bios[j].category == catBag[i])
 					count++;
 			}
-			freqVec.push_back(count/bios.size());
-			probVec.push_back((count/bios.size()+eps)/(1+catBag.size()*eps));
-			logProbVec.push_back(-log2((count/bios.size()+eps)/(1+catBag.size()*eps)));
+			freqVec.push_back((double)count/bios.size());
+			probVec.push_back(((double)count/bios.size()+eps)/(1+catBag.size()*eps));
+			logProbVec.push_back(-log2(((double)count/bios.size()+eps)/(1+catBag.size()*eps)));
+			//cout<<"count/bios.size(): "<<((double)count/bios.size())<<", logProbVec: "<<logProbVec[i]<<endl;
 		}
+	//print model specification
+	if (true){
+	cout<<"printing model specification"<<endl;
+	cout<<"               ";
+	for (int i=0;i<catBag.size();i++){
+		cout<<setw(15)<<catBag[i];
+	}
+	cout<<endl;
+	for (int i=0;i<wordBag.size();i++){
+		cout<<setw(15)<<wordBag[i];
+		for (int j=0;j<catBag.size();j++){
+			cout<<setw(15)<<logProbs[j][i];
+		}
+		cout<<endl;
+	}
+
+	}
 	Model model(logProbs,logProbVec,catBag,wordBag);
  	return(model);
 
